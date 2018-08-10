@@ -1,2 +1,2 @@
 # archlabs-repo
-aur packages for archlabs
+pre-built packages for archlabs
