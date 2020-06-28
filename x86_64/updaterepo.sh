@@ -1,44 +1,36 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Repo update script using repo-add, rsync, and git
-# written by Nathaniel Maia for ArchLabs, December 2017
+# written by Nathaniel Maia for ArchLabs, December 2017-2020
 
-readonly RPATH="$(cd "$(dirname "$0")" || exit ; pwd -P)"
-readonly ARCHDIR="$(basename "$RPATH")"
-readonly REPO_PATH="$(sed "s~/${ARCHDIR}~~" <<< "$RPATH")"
+path="$(realpath "${0%%/*}")"
 
-if ! hash git &>/dev/null; then
-    echo "ERROR: Script requires both rsync and git installed"
+if ! hash git >/dev/null 2>&1; then
+    echo "ERROR: Script requires git installed"
     exit 1
 fi
 
-commit_repo() {
-    cd "$REPO_PATH/$ARCHDIR" || return
-    rm -f archlabs_repo.*
-    repo-add archlabs_repo.db.tar.gz ./*.pkg.tar.xz
-    rm -f archlabs_repo.db
-    cp -f archlabs_repo.db.tar.gz archlabs_repo.db
-}
+if [[ -d $path ]]; then
 
-commit_git() {
+    cd "$path" || exit
+    rm -f archlabs_repo.* archlabs_repo.db.tar.gz
+    repo-add archlabs_repo.db.tar.gz ./*.pkg.tar.xz || exit
+    rm -f archlabs_repo.db
+    cp -f archlabs_repo.db.tar.gz archlabs_repo.db || exit
+
+
+	echo -e "\nPushing to git origin"
     if [[ -e $HOME/.gitconfig ]]; then
-        cd "$REPO_PATH" || return
-        git add .
-        git commit -m "Repo update $(date +%a-%D)"
-        git push origin master
+        cd .. || exit
+        git add . || exit
+        git commit -m "Repo update $(date +%a-%D)" || exit
+        git push origin master || exit
     else
-        echo
         echo "ERROR: You must setup git to use this"
         exit 1
     fi
-}
-
-if [[ -d $REPO_PATH/$ARCHDIR ]]; then
-    commit_repo
-    echo -e "\nPushing to git origin"
-    commit_git
 else
-    echo -e "\nCannot find repo directory: '$REPO_PATH/$ARCHDIR'"
+    echo -e "ERROR: Cannot find repo directory: '$path'"
     exit 1
 fi
 
