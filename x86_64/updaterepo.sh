@@ -3,7 +3,7 @@
 # Repo update script using repo-add, rsync, and git
 # written by Nathaniel Maia for ArchLabs, December 2017-2020
 
-path="$(realpath "${0%%/*}")"
+path="$(realpath "${0%/*}")"
 
 if ! hash git >/dev/null 2>&1; then
     echo "ERROR: Script requires git installed"
