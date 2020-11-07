@@ -15,8 +15,9 @@ if [[ -d $path ]]; then
     cd "$path" || exit
     rm -f archlabs_repo.* archlabs_repo.db.tar.gz
     repo-add archlabs_repo.db.tar.gz ./*.pkg.tar.xz || exit
-    rm -f archlabs_repo.db
+	rm -f archlabs_repo.db archlabs_repo.files
     cp -f archlabs_repo.db.tar.gz archlabs_repo.db || exit
+	cp -f archlabs_repo.files.tar.gz archlabs_repo.files || exit
 
 
 	echo -e "\nPushing to git origin"
